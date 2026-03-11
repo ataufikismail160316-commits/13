@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13.03 | Ismail's Reflection</title>
+    
+    <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:italic,wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: twinkle 3s infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        .hide-view { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen relative">
+
+    <div id="stars-bg" class="fixed inset-0 pointer-events-none"></div>
+
+    <section id="countdown-view" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <div class="mb-10 opacity-70">
+            <lottie-player src="https://lottie.host/790757d7-d716-419b-980b-8d7d9e487920/M6v7i3Q7Hk.json" background="transparent" speed="0.5" style="width: 250px; height: 250px;" loop autoplay></lottie-player>
+        </div>
+        <h2 class="text-[10px] uppercase tracking-[0.5em] text-emerald-500 font-bold mb-4">A Journey of Resilience</h2>
+        <h1 class="font-serif text-4xl mb-8">Menghitung <span class="italic">Malam...</span></h1>
+        
+        <div class="flex gap-6 text-center">
+            <div><span id="d" class="text-4xl font-extrabold block">00</span><span class="text-[9px] opacity-40 uppercase">Hari</span></div>
+            <div><span id="h" class="text-4xl font-extrabold block">00</span><span class="text-[9px] opacity-40 uppercase">Jam</span></div>
+            <div><span id="m" class="text-4xl font-extrabold block">00</span><span class="text-[9px] opacity-40 uppercase">Menit</span></div>
+            <div><span id="s" class="text-4xl font-extrabold block text-emerald-500">00</span><span class="text-[9px] opacity-40 uppercase">Detik</span></div>
+        </div>
+    </section>
+
+    <section id="main-view" class="hide-view py-20 px-6 max-w-md mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="font-serif text-5xl mb-4">13.03</h1>
+            <p class="text-xs tracking-widest text-emerald-400 font-bold uppercase">Happy Self-Reward, Ismail</p>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] mb-12 italic text-sm leading-relaxed text-slate-300">
+            "Malam ini sunyi, tapi Ismail tidak lagi merasa sepi. Ia belajar bahwa merelakan adalah bentuk tertinggi dari mencintai diri sendiri. Bab ini baru dimulai..."
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] mb-12">
+            <h3 class="text-xs font-bold uppercase tracking-widest mb-6">Tinggalkan Jejak</h3>
+            <input type="text" id="input-nama" placeholder="Siapa namamu?" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm outline-none focus:border-emerald-500 mb-4 transition-all">
+            <textarea id="input-pesan" placeholder="Tulis doa atau ucapan..." class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm outline-none focus:border-emerald-500 h-32 mb-4 transition-all"></textarea>
+            <button onclick="kirimUcapan()" class="w-full bg-emerald-600 py-4 rounded-xl font-bold text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/20">KIRIM UCAPAN</button>
+        </div>
+
+        <div id="list-ucapan" class="space-y-4">
+            </div>
+    </section>
+
+    <script>
+        const URL_SB = 'https://koyrvhtqsqbinagynfyf.supabase.co';
+        const KEY_SB = 'sb_publishable_7UyNt1p50WprNz-K-_bFng_cymPxs5M';
+        const sb = supabase.createClient(URL_SB, KEY_SB);
+
+        // 1. Countdown & Auto-Unlock (Set ke 13 Maret 2026)
+        const target = new Date("March 13, 2026 00:00:00").getTime();
+        
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdown-view').classList.add('hide-view');
+                document.getElementById('main-view').classList.remove('hide-view');
+                ambilUcapan();
+                return;
+            }
+
+            document.getElementById('d').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('h').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('m').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('s').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+        }
+        setInterval(updateTimer, 1000);
+
+        // 2. Tracking Source Logic
+        function getSource() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('ref') || 'web';
+        }
+
+        // 3. Supabase Operations
+        async function kirimUcapan() {
+            const nama = document.getElementById('input-nama').value;
+            const pesan = document.getElementById('input-pesan').value;
+            const ref = getSource();
+
+            if(!nama || !pesan) return alert('Lengkapi datanya ya!');
+
+            const { error } = await sb.from('ucapan_ultah').insert([{ nama, isi_pesan: pesan, sumber: ref }]);
+            if(!error) { alert('Terkirim! Terima kasih.'); location.reload(); }
+        }
+
+        async function ambilUcapan() {
+            const { data, error } = await sb.from('ucapan_ultah').select('*').order('created_at', { ascending: false });
+            if (error) return;
+
+            let html = '';
+            data.forEach(u => {
+                let icon = u.sumber === 'ig' ? 'fa-brands fa-instagram text-pink-400' : 
+                           u.sumber === 'wa' ? 'fa-brands fa-whatsapp text-emerald-400' : 
+                           u.sumber === 'fb' ? 'fa-brands fa-facebook text-blue-400' : 'fa-solid fa-star';
+                
+                html += `
+                    <div class="glass p-6 rounded-2xl relative">
+                        <i class="${icon} absolute top-4 right-4 opacity-30"></i>
+                        <p class="text-[10px] font-bold text-emerald-500 uppercase mb-2 tracking-widest">${u.nama}</p>
+                        <p class="text-xs text-slate-300 italic">"${u.isi_pesan}"</p>
+                    </div>`;
+            });
+            document.getElementById('list-ucapan').innerHTML = html;
+        }
+
+        // 4. Background Stars Decoration
+        for (let i = 0; i < 50; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.top = Math.random() * 100 + 'vh';
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.width = s.style.height = Math.random() * 3 + 'px';
+            document.getElementById('stars-bg').appendChild(s);
+        }
+    </script>
+</body>
+</html>
